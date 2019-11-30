@@ -1,3 +1,6 @@
+Pour store un fichier dans MySQL, utiliser le type BLOB
+https://dev.mysql.com/doc/refman/8.0/en/blob.html
+
 DB Info:
 
 Users:
@@ -9,3 +12,30 @@ Database:
 - hot file
 - large file
 - small file
+
+_______________________________
+Dans la db faut les tables:
+
+-users
+  - //liste des attributs classiques
+  - espace disque restant pour l'utilisateur
+  
+-small files
+  - // en attribut faudra dire qui est le proprio du fichier
+  - nombre d'edits
+  
+-big files
+  - // dans les attributs faut avoir le chemin vers le fichier
+  - faudra dans le file system avoir genre un dossier par utilisateur où il peut stocker ses fichiers
+  - nombre d'edits
+  
+-metadata >> taille du buffer, espace max par utilisateur
+
+________________________________
+
+TODO :
+- systeme de sign up, login, sign out
+- systeme de lecture/ecriture/commit des fichiers
+- administration de la base de données
+- un bail pour envoyer les small files en big files en cas de changement de la taille du buffer
+- ?
