@@ -15,11 +15,11 @@ def insertBLOB(file, id):
                               database='db_project_inha')
             
         mycursor = mydb.cursor()
-        query = "INSERT INTO file ( content, path, owner_id, edits, size, hotcold) VALUES (%s,%s,%s,%s,%s,%s)"
+        query = "INSERT INTO file ( id,content, path, owner_id, edits, size, hotcold) VALUES (%s,%s,%s,%s,%s,%s,%s)"
 
         binFile = convertToBinary(file)
 
-        insertTuple = ( binFile, "",id,0,os.path.getsize(file),"cold")
+        insertTuple = ("", binFile, "",id,0,os.path.getsize(file),"cold")
 
         result = mycursor.execute(query, insertTuple)
         mydb.commit()
@@ -33,7 +33,7 @@ def insertBLOB(file, id):
             print("MySQL connection is closed")
 
 
-insertBLOB("C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testfile.txt",2)
+#insertBLOB("C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testfile.txt",2)
 
 ##fonctions pour prendre un fichier en db, le storer sur le pc, l'ouvrir et l'éditer
 def write_file(data, filename):
@@ -57,6 +57,7 @@ def updateBLOB(id, fileToSave, textToAdd):
             content = row[1]
             edits = row[4]
             print(edits)
+            print(type(content))
             hotness = row[5]
             write_file(content, fileToSave)
             
@@ -100,4 +101,61 @@ def updateBLOB(id, fileToSave, textToAdd):
             mydb.close()
             print("MySQL connection is closed")
 
-#updateBLOB(1, "C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testreadfile.txt", "\nadded text")
+updateBLOB(1, "C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testreadfile.txt", "\nadded text")
+
+
+def getCountColdSmall():
+    mydb = mysql.connector.connect(user='root', password='',host='localhost',                           database='db_project_inha')  
+
+    mycursor = mydb.cursor()
+
+    query = "SELECT count(edits) FROM file WHERE hotcold = 'cold' AND size < (SELECT value from dbsettings where name= 'buffersize')"
+    mycursor.execute(query)
+
+    result = mycursor.fetchall()
+    for r in result:
+        result = (r[0])
+        print(result)
+    return result
+
+def getCountColdBig():
+    mydb = mysql.connector.connect(user='root', password='',host='localhost',                           database='db_project_inha')  
+
+    mycursor = mydb.cursor()
+
+    query = "SELECT count(edits) FROM file WHERE hotcold = 'cold' AND size > (SELECT value from dbsettings where name= 'buffersize')"
+    mycursor.execute(query)
+
+    result = mycursor.fetchall()
+    for r in result:
+        result = (r[0])
+        print(result)
+    return result
+
+def getCountHotSmall():
+    mydb = mysql.connector.connect(user='root', password='',host='localhost',                           database='db_project_inha')  
+
+    mycursor = mydb.cursor()
+
+    query = "SELECT count(edits) FROM file WHERE hotcold = 'hot' AND size < (SELECT value from dbsettings where name= 'buffersize')"
+    mycursor.execute(query)
+
+    result = mycursor.fetchall()
+    for r in result:
+        result = (r[0])
+        print(result)
+    return result
+
+def getCountHotBig():
+    mydb = mysql.connector.connect(user='root', password='',host='localhost',                           database='db_project_inha')  
+
+    mycursor = mydb.cursor()
+
+    query = "SELECT count(edits) FROM file WHERE hotcold = 'hot' AND size > (SELECT value from dbsettings where name= 'buffersize')"
+    mycursor.execute(query)
+
+    result = mycursor.fetchall()
+    for r in result:
+        result = (r[0])
+        print(result)
+    return result
