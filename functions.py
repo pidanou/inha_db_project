@@ -8,18 +8,18 @@ def convertToBinary(filename):
                 binaryData = file.read()
         return binaryData
 
-def insertBLOB(file):
+def insertBLOB(file, id):
     try:
         mydb = mysql.connector.connect(user='root', password='',
                               host='localhost',
                               database='inha_db_project')
             
         mycursor = mydb.cursor()
-        query = "INSERT INTO smallfile (id, content, owner, edits) VALUES (%s,%s,%s,%s)"
+        query = "INSERT INTO file (id, content, path, owner, edits, size, hotcold) VALUES (%s,%s,%s,%s,%s,%s,%s)"
 
         binFile = convertToBinary(file)
 
-        insertTuple = ("", binFile, 2, 0)
+        insertTuple = ("", binFile, "",id,0,os.path.getsize(file),"cold")
 
         result = mycursor.execute(query, insertTuple)
         mydb.commit()
@@ -33,23 +33,22 @@ def insertBLOB(file):
             print("MySQL connection is closed")
 
 
-#insertBLOB("C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testfile.txt")
+#insertBLOB("C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testfile.txt",2)
 
 ##fonctions pour prendre un fichier en db, le storer sur le pc, l'ouvrir et l'éditer
 def write_file(data, filename):
     with open(filename, 'wb') as file:
         file.write(data)
 
-def readBLOB(id, fileToSave, textToAdd):
+def updateBLOB(id, fileToSave, textToAdd):
     try:
         mydb = mysql.connector.connect(user='root', password='',
                               host='localhost',
-                              database='inha_db_project')
-            
+                              database='inha_db_project')  
+
         mycursor = mydb.cursor()
 
-        query = "SELECT * FROM smallfile where id = %s"
-        
+        query = "SELECT * FROM file where id = %s"
         mycursor.execute(query, (id,))
 
         record = mycursor.fetchall()
@@ -57,17 +56,25 @@ def readBLOB(id, fileToSave, textToAdd):
         for row in record:
             print(row[0])
             content = row[1]
-            edits = row[3]
+            edits = row[4]
+            print(edits)
+            hotness = row[5]
             write_file(content, fileToSave)
+            
+        
         with open(fileToSave,"a") as f:
             f.write(textToAdd)
             f.close()
         
         newFileToDatabase = convertToBinary(fileToSave)
 
+        if edits > 4:
+            hotness = "hot"
+        else:
+            hotness = "cold"
 
-        query = "UPDATE smallfile SET content = %s, edits = %s WHERE id=%s"
-        mycursor.execute(query, (newFileToDatabase, edits+1,id,))
+        query = "UPDATE file SET content = %s, edits = %s, hotcold=%s, size=%s WHERE id=%s"
+        mycursor.execute(query, (newFileToDatabase, edits+1, hotness,os.path.getsize(fileToSave),id,))
         mydb.commit()
 
     except mysql.connector.Error as error:
@@ -79,4 +86,4 @@ def readBLOB(id, fileToSave, textToAdd):
             mydb.close()
             print("MySQL connection is closed")
 
-readBLOB(1, "C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testreadfile.txt", "\nadded text")
+updateBLOB(0, "C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testreadfile.txt", "\nadded text")

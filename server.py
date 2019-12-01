@@ -76,6 +76,7 @@ def delete(option):
     mycursor.execute(sql_file, sql_file_value)
     myresult = mycursor.fetchall()
     print(myresult)
+
 #def add_file():
 
 #def update_file():
