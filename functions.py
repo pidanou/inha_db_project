@@ -9,19 +9,20 @@ def convertToBinary(filename):
         return binaryData
 
 def insertBLOB(file, id):
+    
     try:
         mydb = mysql.connector.connect(user='root', password='',
                               host='localhost',
-                              database='db_project_inha')
+                              database='mydatabase')
             
         mycursor = mydb.cursor()
-        query = "INSERT INTO file ( content, path, owner_id, edits, size, hotcold) VALUES (%s,%s,%s,%s,%s,%s)"
+        #query = "INSERT INTO file (id, content, path, owner_id, edits, size, hotcold) VALUES (%s, %s,%s,%s,%s,%s,%s)"
+        #binFile = convertToBinary(file)
+        query1 = "INSERT INTO user (id, username, password, user_type, spaceleft) VALUES (3, 'admin1', 'admin1', 0, 100);"
+        #insertTuple = (1, binFile, "",id,0,os.path.getsize(file),"cold")
 
-        binFile = convertToBinary(file)
-
-        insertTuple = ( binFile, "",id,0,os.path.getsize(file),"cold")
-
-        result = mycursor.execute(query, insertTuple)
+        #result = mycursor.execute(query, insertTuple)
+        result = mycursor.execute(query1)
         mydb.commit()
 
     except mysql.connector.Error as error:
@@ -33,7 +34,7 @@ def insertBLOB(file, id):
             print("MySQL connection is closed")
 
 
-insertBLOB("C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testfile.txt",2)
+insertBLOB("/Users/theorolino/Documents/GitHub/inha_db_project/testText.txt",2)
 
 ##fonctions pour prendre un fichier en db, le storer sur le pc, l'ouvrir et l'éditer
 def write_file(data, filename):
