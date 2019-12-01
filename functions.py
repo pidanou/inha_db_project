@@ -12,14 +12,14 @@ def insertBLOB(file, id):
     try:
         mydb = mysql.connector.connect(user='root', password='',
                               host='localhost',
-                              database='inha_db_project')
+                              database='db_project_inha')
             
         mycursor = mydb.cursor()
-        query = "INSERT INTO file (id, content, path, owner, edits, size, hotcold) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        query = "INSERT INTO file ( content, path, owner_id, edits, size, hotcold) VALUES (%s,%s,%s,%s,%s,%s)"
 
         binFile = convertToBinary(file)
 
-        insertTuple = ("", binFile, "",id,0,os.path.getsize(file),"cold")
+        insertTuple = ( binFile, "",id,0,os.path.getsize(file),"cold")
 
         result = mycursor.execute(query, insertTuple)
         mydb.commit()
@@ -33,7 +33,7 @@ def insertBLOB(file, id):
             print("MySQL connection is closed")
 
 
-#insertBLOB("C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testfile.txt",2)
+insertBLOB("C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testfile.txt",2)
 
 ##fonctions pour prendre un fichier en db, le storer sur le pc, l'ouvrir et l'éditer
 def write_file(data, filename):
@@ -44,7 +44,7 @@ def updateBLOB(id, fileToSave, textToAdd):
     try:
         mydb = mysql.connector.connect(user='root', password='',
                               host='localhost',
-                              database='inha_db_project')  
+                              database='db_project_inha')  
 
         mycursor = mydb.cursor()
 
@@ -54,14 +54,15 @@ def updateBLOB(id, fileToSave, textToAdd):
         record = mycursor.fetchall()
 
         for row in record:
-            print(row[0])
             content = row[1]
             edits = row[4]
             print(edits)
             hotness = row[5]
             write_file(content, fileToSave)
             
-        
+        filesize = os.path.getsize(fileToSave)
+        print(filesize)
+
         with open(fileToSave,"a") as f:
             f.write(textToAdd)
             f.close()
@@ -73,8 +74,21 @@ def updateBLOB(id, fileToSave, textToAdd):
         else:
             hotness = "cold"
 
-        query = "UPDATE file SET content = %s, edits = %s, hotcold=%s, size=%s WHERE id=%s"
-        mycursor.execute(query, (newFileToDatabase, edits+1, hotness,os.path.getsize(fileToSave),id,))
+        querySize = "SELECT value from dbsettings where name= 'buffersize'"
+        mycursor.execute(querySize)
+        r = mycursor.fetchall()
+        for row in r:
+            buffersize = row[0]
+            print(buffersize)
+
+        if os.path.getsize(fileToSave) < buffersize:
+            query = "UPDATE file SET content = %s, edits = %s, hotcold=%s, size=%s WHERE id=%s"
+            mycursor.execute(query, (newFileToDatabase, edits+1, hotness,os.path.getsize(fileToSave),id,))
+        else :
+            query = "UPDATE file SET path = %s, edits = %s, hotcold=%s, size=%s WHERE id=%s"
+            mycursor.execute(query, (fileToSave, edits+1, hotness, os.path.getsize(fileToSave), id,))
+
+        
         mydb.commit()
 
     except mysql.connector.Error as error:
@@ -86,4 +100,4 @@ def updateBLOB(id, fileToSave, textToAdd):
             mydb.close()
             print("MySQL connection is closed")
 
-updateBLOB(0, "C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testreadfile.txt", "\nadded text")
+#updateBLOB(1, "C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testreadfile.txt", "\nadded text")
