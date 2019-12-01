@@ -32,7 +32,8 @@ CREATE TABLE `bigfile` (
   `id` int(11) NOT NULL,
   `path` varchar(40) NOT NULL,
   `owner` int(11) NOT NULL,
-  `edits` int(11) NOT NULL DEFAULT '0'
+  `edits` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -45,7 +46,8 @@ CREATE TABLE `smallfile` (
   `id` int(11) NOT NULL,
   `content` mediumblob NOT NULL,
   `owner` int(11) NOT NULL,
-  `edits` int(11) NOT NULL DEFAULT '0'
+  `edits` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -56,9 +58,10 @@ CREATE TABLE `smallfile` (
 
 CREATE TABLE `user` (
   `id` int(11) NOT NULL,
+  `user_type` tinyint(1) NOT NULL,
   `username` varchar(15) NOT NULL,
   `password` varchar(15) NOT NULL,
-  `admin` tinyint(1) NOT NULL
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
