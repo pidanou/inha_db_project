@@ -9,10 +9,11 @@ def convertToBinary(filename):
         return binaryData
 
 def insertBLOB(file, id):
+    
     try:
         mydb = mysql.connector.connect(user='root', password='',
                               host='localhost',
-                              database='db_project_inha')
+                              database='mydatabase')
             
         mycursor = mydb.cursor()
         query = "INSERT INTO file ( id,content, path, owner_id, edits, size, hotcold) VALUES (%s,%s,%s,%s,%s,%s,%s)"
