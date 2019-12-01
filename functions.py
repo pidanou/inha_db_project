@@ -102,7 +102,7 @@ def updateBLOB(id, fileToSave, textToAdd):
             mydb.close()
             print("MySQL connection is closed")
 
-updateBLOB(1, "C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testreadfile.txt", "\nadded text")
+#updateBLOB(1, "C:\\Users\\Pidanou\\Documents\\inha\\database\\inha_db_project\\testreadfile.txt", "\nadded text")
 
 
 def getCountColdSmall():
@@ -160,3 +160,22 @@ def getCountHotBig():
         result = (r[0])
         print(result)
     return result
+
+def changeBufferSize(size):
+    mydb = mysql.connector.connect(user='root', password='',host='localhost',                           database='db_project_inha')  
+    mycursor = mydb.cursor()
+
+    query = "UPDATE dbsettings SET value = %s WHERE name='buffersize'"
+    mycursor.execute(query, (size,))
+    mydb.commit()
+
+
+def changeSpaceAllowed(size):
+    mydb = mysql.connector.connect(user='root', password='',host='localhost',                           database='db_project_inha')  
+    mycursor = mydb.cursor()
+
+    query = "UPDATE dbsettings SET value = %s WHERE name='spaceallow'"
+    mycursor.execute(query, (size,))
+    mydb.commit()
+
+
