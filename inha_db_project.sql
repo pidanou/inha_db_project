@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le :  sam. 30 nov. 2019 à 12:59
+-- Généré le :  Dim 01 déc. 2019 à 09:22
 -- Version du serveur :  10.1.39-MariaDB
 -- Version de PHP :  7.3.5
 
@@ -25,30 +25,43 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `bigfile`
+-- Structure de la table `dbsettings`
 --
 
-CREATE TABLE `bigfile` (
-  `id` int(11) NOT NULL,
-  `path` varchar(40) NOT NULL,
-  `owner` int(11) NOT NULL,
-  `edits` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+CREATE TABLE `dbsettings` (
+  `buffersize` int(11) NOT NULL,
+  `spaceperuser` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `dbsettings`
+--
+
+INSERT INTO `dbsettings` (`buffersize`, `spaceperuser`) VALUES
+(10, 50);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `smallfile`
+-- Structure de la table `file`
 --
 
-CREATE TABLE `smallfile` (
+CREATE TABLE `file` (
   `id` int(11) NOT NULL,
-  `content` mediumblob NOT NULL,
+  `content` blob,
+  `path` int(11) NOT NULL,
   `owner` int(11) NOT NULL,
   `edits` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `size` int(11) NOT NULL,
+  `hotcold` enum('hot','cold') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `file`
+--
+
+INSERT INTO `file` (`id`, `content`, `path`, `owner`, `edits`, `size`, `hotcold`) VALUES
+(0, 0x74686973206973206120746573742066696c650d0a616464656420746578740d0a616464656420746578740d0a616464656420746578740d0a616464656420746578740d0a616464656420746578740d0a616464656420746578740d0a616464656420746578740d0a616464656420746578740d0a61646465642074657874, 0, 2, 9, 127, 'hot');
 
 -- --------------------------------------------------------
 
@@ -61,26 +74,26 @@ CREATE TABLE `user` (
   `user_type` tinyint(1) NOT NULL,
   `username` varchar(15) NOT NULL,
   `password` varchar(15) NOT NULL,
-  PRIMARY KEY (`id`)
+  `spaceleft` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `user`
+--
+
+INSERT INTO `user` (`id`, `user_type`, `username`, `password`, `spaceleft`) VALUES
+(1, 0, 'admin', 'admin', 50),
+(2, 1, 'user', 'user', 50);
 
 --
 -- Index pour les tables déchargées
 --
 
 --
--- Index pour la table `bigfile`
+-- Index pour la table `file`
 --
-ALTER TABLE `bigfile`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_owner_2` (`owner`);
-
---
--- Index pour la table `smallfile`
---
-ALTER TABLE `smallfile`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_owner` (`owner`);
+ALTER TABLE `file`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Index pour la table `user`
@@ -93,38 +106,10 @@ ALTER TABLE `user`
 --
 
 --
--- AUTO_INCREMENT pour la table `bigfile`
---
-ALTER TABLE `bigfile`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `smallfile`
---
-ALTER TABLE `smallfile`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Contraintes pour les tables déchargées
---
-
---
--- Contraintes pour la table `bigfile`
---
-ALTER TABLE `bigfile`
-  ADD CONSTRAINT `fk_owner_2` FOREIGN KEY (`owner`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Contraintes pour la table `smallfile`
---
-ALTER TABLE `smallfile`
-  ADD CONSTRAINT `fk_owner` FOREIGN KEY (`owner`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
