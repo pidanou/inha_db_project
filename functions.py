@@ -119,6 +119,8 @@ def getCountColdSmall():
         print(result)
     return result
 
+
+
 def getCountColdBig():
     mydb = mysql.connector.connect(user='root', password='',host='localhost',                           database='db_project_inha')  
 
@@ -176,6 +178,16 @@ def changeSpaceAllowed(size):
 
     query = "UPDATE dbsettings SET value = %s WHERE name='spaceallow'"
     mycursor.execute(query, (size,))
+    mydb.commit()
+
+
+def createAccount(username, password):
+    mydb = mysql.connector.connect(user='root', password='',host='localhost',                           database='db_project_inha')  
+    mycursor = mydb.cursor()
+
+    query="INSERT INTO user (username, password, user_type, spaceleft) VALUES (%s, %s, 1, (SELECT value from dbsettings WHERE name='spaceallow'))"
+
+    mycursor.execute(query, (username, password,))
     mydb.commit()
 
 
